@@ -837,22 +837,24 @@ ffiDefine n ffis = case ffis of
 
 upFrom n = n : upFrom (n + 1);
 zipWith f xs ys = flst xs [] $ \x xt -> flst ys [] $ \y yt -> f x y : zipWith f xt yt;
-
+progLine p r = "prog[" ++ showInt (fst p) "] = " ++ showInt (snd p) (";\n"++r);
+progBody mem = foldr (.) id (map progLine (zipWith (,) (upFrom 0) (snd mem [])));
+rootBody tab = foldr (\p f -> fpair p \x y -> ("root[" ++) . showInt x . ("] = " ++) . maybe undefined showInt (mlookup (snd y) tab) . (";\n" ++) . f) id;
 compile s = fmaybe (program s) "parse error" \progRest ->
   fpair progRest \prog rest -> fneat (untangle prog) \ienv fs typed ffis exs -> case inferDefs ienv fs typed of
   { Left err -> err
   ; Right qas -> fpair (asm qas) \tab mem ->
+      let { rootSize = length exs; progSize = length (snd mem []) } in
     (concatMap ffiDeclare ffis ++) .
     ("unsigned foreign(unsigned n) {\n  switch(n) {\n" ++) .
     ffiDefine (length ffis - 1) ffis .
     ("\n  }\n}\n" ++) .
-    ("char *prog=\"" ++) .
-    foldr (.) id (map (\n -> showInt n . (',':)) $ snd mem []) .
-    ("\";\nunsigned prog_size=sizeof(prog)/sizeof(*prog);\n" ++) .
-    ("unsigned root[]={" ++) .
-    foldr (\p f -> fpair p \x y -> maybe undefined showInt (mlookup y tab) . (", " ++) . f) id exs .
-    ("};\n" ++) .
-    ("unsigned root_size=" ++) . showInt (length exs) . (";\n" ++) $
+    (("unsigned prog[" ++ showInt progSize "];\n") ++) .
+    progBody mem .
+    (("unsigned prog_size=" ++ showInt progSize "/sizeof(*prog);\n") ++) .
+    (("unsigned root[" ++ showInt rootSize "];\n") ++) .
+    rootBody tab (zipWith (,) (upFrom 0) exs) .
+      ("unsigned root_size=" ++) . showInt rootSize . (";\n" ++) $
     flst exs ("int main(){rts_init();rts_reduce(" ++ maybe undefined showInt (mlookup (fst $ last qas) tab) ");return 0;}") $ \_ _ ->
       concat $ zipWith (\p n -> "EXPORT(f" ++ showInt n ", \"" ++ fst p ++ "\", " ++ showInt n ")\n") exs (upFrom 0)
   };
