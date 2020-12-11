@@ -15,6 +15,25 @@
 -- along with blynn-compiler.  If not, see
 -- <https://www.gnu.org/licenses/>.
 -- Standalone compiler.
+{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
+module Main where
+import Prelude (Char, Int, String, succ, interact, IO)
+import Data.Char (chr, ord)
+import qualified Prelude
+import System.IO.Unsafe (unsafePerformIO)
+import System.Exit (exitSuccess)
+(*) = (Prelude.*)
+(+) = (Prelude.+)
+(-) = (Prelude.-)
+(/) = Prelude.div
+(%) = Prelude.mod
+ioPure = Prelude.pure :: a -> IO a
+ioBind = (Prelude.>>=) :: IO a -> (a -> IO b) -> IO b
+instance Eq Char where { (==) x y = if x Prelude.== y then True else False };
+instance Ord Char where { (<=) x y = if x Prelude.<= y then True else False };
 infixr 9 .;
 infixl 7 *;
 infixl 6 + , -;
@@ -26,8 +45,8 @@ infixl 2 ||;
 infixl 1 >> , >>=;
 infixr 0 $;
 
-ffi "putchar" putChar :: Int -> IO Int;
-ffi "getchar" getChar :: IO Int;
+foreign import ccall "putchar" putChar :: Int -> IO Int;
+foreign import ccall "getchar" getChar :: IO Int;
 
 class Functor f where { fmap :: (a -> b) -> f a -> f b };
 class Applicative f where
@@ -40,14 +59,14 @@ class Monad m where
 };
 (>>) f g = f >>= \_ -> g;
 class Eq a where { (==) :: a -> a -> Bool };
-instance Eq Int where { (==) = intEq };
+instance Eq Int where { (==) x y = if x Prelude.== y then True else False };
 ($) f x = f x;
 id x = x;
 flip f x y = f y x;
 (&) x f = f x;
 data Bool = True | False;
 class Ord a where { (<=) :: a -> a -> Bool };
-instance Ord Int where { (<=) = intLE };
+instance Ord Int where { (<=) x y = if x Prelude.<= y then True else False };
 data Ordering = LT | GT | EQ;
 compare x y = case x <= y of
   { True -> case y <= x of
