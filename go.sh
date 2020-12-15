@@ -109,10 +109,12 @@ hex2 -f test/common_x86/ELF-i386-debug.hex2 \
 ./bin/vm -f patty.hs --rts_c generated/lonely.c -o generated/patty.c
 
 # Make guardedly
-./bin/vm -f guardedly.hs --rts_c generated/patty.c -o generated/guardedly.c
+./filter_haskell_output generated/patty.c generated/patty_raw.txt
+./bin/vm -f guardedly.hs --rts_c generated/patty_raw.txt -o generated/guardedly.c
 
 # Make assembly
-./bin/vm -f assembly.hs --rts_c generated/guardedly.c -o generated/assembly.c
+./filter_haskell_output generated/guardedly.c generated/guardedly_raw.txt
+./bin/vm -f assembly.hs --rts_c generated/guardedly_raw.txt -o generated/assembly.c
 
 # TODO: fix mutually hanging
 ## Make mutually
