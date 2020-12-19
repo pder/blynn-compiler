@@ -32,3 +32,5 @@ hex2 -f test/common_x86/ELF-i386-debug.hex2 \
 	--architecture x86 \
 	--BaseAddress 0x8048000 \
 	-o bin/marginally --exec_enable
+
+time ./bin/marginally < methodically.hs
