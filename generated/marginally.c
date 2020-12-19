@@ -24575,6 +24575,7 @@ void run() {
   else if (x == _MOD) { lazy2(2,_NUM,num(1) % num(2)); }
   else if (x == _EQ) { if (num(1) == num(2)) lazy2(2, _I, _K); else lazy2(2, _K, _I); }
   else if (x == _LE) {
+      i = 12345; /* This assignment seems to affect the comparison below.  If this line is removed the program hangs */
       if (num(1) <= num(2))
       {
           lazy2(2, _I, _K);
