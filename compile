@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -eux
+input=$1
+base=$(basename $input .hs)
+output=${base}.c
+
+./bin/precisely ${input} ${output}
+
+M2-Planet --architecture x86 \
+	--bootstrap-mode \
+	-f functions/file.c \
+	-f functions/exit.c \
+	-f functions/malloc.c \
+	-f functions/calloc.c \
+	-f functions/file_print.c \
+	-f functions/in_set.c \
+	-f functions/numerate_number.c \
+	-f functions/match.c \
+	-f functions/require.c \
+	-f ${output} \
+	--debug \
+	-o ${base}.M1
+
+blood-elf -f ${base}.M1 --entry _start -o ${base}-footer.M1
+
+M1 -f test/common_x86/x86_defs.M1 \
+	-f test/common_x86/libc-core.M1 \
+	-f ${base}.M1 \
+	-f ${base}-footer.M1 \
+	--LittleEndian \
+	--architecture x86 \
+	-o ${base}.hex2
+
+hex2 -f test/common_x86/ELF-i386-debug.hex2 \
+	-f ${base}.hex2 \
+	--LittleEndian \
+	--architecture x86 \
+	--BaseAddress 0x8048000 \
+	-o ${base} --exec_enable
