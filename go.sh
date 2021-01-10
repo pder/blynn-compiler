@@ -10,7 +10,6 @@ mkdir -p generated
 
 # compile pack_blobs.c
 M2-Planet --architecture x86 \
-	--bootstrap-mode \
 	-f functions/file.c \
 	-f functions/exit.c \
 	-f functions/malloc.c \
@@ -50,7 +49,6 @@ hex2 -f test/common_x86/ELF-i386-debug.hex2 \
 
 # Compile to assembly vm.c
 M2-Planet --architecture x86 \
-	--bootstrap-mode \
 	-f functions/file.c \
 	-f functions/exit.c \
 	-f functions/malloc.c \
@@ -126,7 +124,6 @@ hex2 -f test/common_x86/ELF-i386-debug.hex2 \
 # Make marginally
 ./bin/vm -f marginally.hs --foreign 2 --raw generated/virtually_raw.txt --rts_c run -o generated/marginally.c
 M2-Planet --architecture x86 \
-	--bootstrap-mode \
 	-f functions/file.c \
 	-f functions/exit.c \
 	-f functions/malloc.c \
@@ -160,7 +157,6 @@ hex2 -f test/common_x86/ELF-i386-debug.hex2 \
 # Make methodically
 ./bin/marginally methodically.hs generated/methodically.c
 M2-Planet --architecture x86 \
-	--bootstrap-mode \
 	-f functions/file.c \
 	-f functions/exit.c \
 	-f functions/malloc.c \
@@ -194,7 +190,6 @@ hex2 -f test/common_x86/ELF-i386-debug.hex2 \
 # Make crossly
 ./bin/methodically crossly.hs generated/crossly.c
 M2-Planet --architecture x86 \
-	--bootstrap-mode \
 	-f functions/file.c \
 	-f functions/exit.c \
 	-f functions/malloc.c \
@@ -228,7 +223,6 @@ hex2 -f test/common_x86/ELF-i386-debug.hex2 \
 # Make precisely
 ./bin/crossly precisely.hs generated/precisely.c
 M2-Planet --architecture x86 \
-	--bootstrap-mode \
 	-f functions/file.c \
 	-f functions/exit.c \
 	-f functions/malloc.c \

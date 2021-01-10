@@ -1786,8 +1786,8 @@ preamble = ([r|
 // CONSTANT REDUCING 126
 #define REDUCING 126
 
-//CONSTANT CELL_SIZE sizeof(unsigned)
 #define CELL_SIZE 1
+//CONSTANT CELL_SIZE sizeof(unsigned)
 
 unsigned* mem;
 unsigned* altmem;

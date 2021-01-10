@@ -1441,8 +1441,8 @@ preamble = [r|
 // CONSTANT TOP 16777216
 #define TOP 16777216
 
-//CONSTANT CELL_SIZE sizeof(unsigned)
 #define CELL_SIZE 1
+//CONSTANT CELL_SIZE sizeof(unsigned)
 
 void file_print(char* s, FILE* f);
 
